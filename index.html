@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUBE EDIT | ポップで安心なモザイク・マスキング動画編集サービス</title>
+    <meta name="description" content="コンプライアンスを守りつつ、動画の魅力を損なわない。高品質なモザイク・マスキング処理専門の動画編集サービス「CUBE EDIT」">
+    <style>
+        /* * ROI最適化: 外部ライブラリへの依存を排除し、
+         * 全てのスタイルを本ファイルに内包。
+         */
+        :root {
+            --color-bg-primary: #D4C1E0; /* パステルパープル */
+            --color-bg-secondary: #FFFFFF;
+            --color-accent-main: #FCE17A; /* バナナ/スターのイエロー */
+            --color-accent-hover: #F2D252;
+            --color-text-main: #4A3C4D; /* ダークパープルブラウン */
+            --color-text-light: #7A697E;
+            --color-border-gold: #D2B787; /* 外枠のゴールド */
+            --font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            --border-radius: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            color: var(--color-text-main);
+            background-color: var(--color-bg-secondary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 共通ユーティリティ */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 4px;
+            background-color: var(--color-accent-main);
+            margin: 12px auto 0;
+            border-radius: 2px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--color-accent-main);
+            color: var(--color-text-main);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 16px 40px;
+            border-radius: 50px;
+            border: 2px solid var(--color-border-gold);
+            box-shadow: 0 4px 0 var(--color-border-gold);
+            transition: all 0.2s ease;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: var(--color-accent-hover);
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--color-border-gold);
+        }
+
+        /* ヘッダー */
+        header {
+            background-color: var(--color-bg-secondary);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--color-text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-cube {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-color: var(--color-accent-main);
+            border: 2px solid var(--color-text-main);
+            border-radius: 4px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 24px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--color-text-main);
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* ヒーローセクション */
+        .hero {
+            background-color: var(--color-bg-primary);
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 8px solid var(--color-border-gold);
+        }
+
+        .hero::before, .hero::after {
+            content: '';
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.4);
+            border: 2px solid var(--color-border-gold);
+            border-radius: 8px;
+        }
+
+        .hero::before {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            left: 10%;
+            transform: rotate(15deg);
+        }
+
+        .hero::after {
+            width: 40px;
+            height: 40px;
+            bottom: 30%;
+            right: 15%;
+            transform: rotate(-20deg);
+        }
+
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background-color: var(--color-bg-secondary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--color-text-main);
+            border: 2px solid var(--color-border-gold);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            line-height: 1.4;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 span {
+            color: var(--color-bg-secondary);
+            text-shadow: -1px -1px 0 var(--color-text-main),  
+                          1px -1px 0 var(--color-text-main),
+                         -1px  1px 0 var(--color-text-main),
+                          1px  1px 0 var(--color-text-main);
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* 導入実績セクション */
+        .track-record {
+            background-color: #F9F7FA;
+            padding: 60px 0;
+            border-bottom: 2px dashed var(--color-border-gold);
+        }
+
+        .metrics-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .metric-item h4 {
+            font-size: 32px;
+            color: var(--color-text-main);
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .metric-item h4 span {
+            font-size: 16px;
+        }
+
+        .metric-item p {
+            font-size: 14px;
+            color: var(--color-text-light);
+            font-weight: bold;
+        }
+
+        .platform-logos {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: center;
+        }
+
+        /* CSSで作るプラットフォームロゴ風バッジ */
+        .logo-badge {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 20px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 140px;
+            user-select: none;
+        }
+
+        .logo-fanza {
+            background-color: #000000;
+            color: #FFCC00;
+            border: 2px solid #000;
+        }
+
+        .logo-fantia {
+            background-color: #FFFFFF;
+            color: #FF5A85;
+            border: 2px solid #FF5A85;
+            border-radius: 20px;
+        }
+        
+        .logo-myfans {
+            background-color: #1A1A1A;
+            color: #00E5FF;
+            font-style: italic;
+        }
+
+        .logo-youtube {
+            background-color: #FFFFFF;
+            color: #282828;
+            border: 1px solid #E5E5E5;
+        }
+        
+        .logo-youtube::before {
+            content: '▶';
+            color: #FF0000;
+            margin-right: 6px;
+            font-size: 18px;
+        }
+
+        /* 課題セクション */
+        .problems {
+            background-color: var(--color-bg-secondary);
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .problem-card {
+            background-color: #F9F7FA;
+            padding: 32px;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--color-border-gold);
+            text-align: center;
+        }
+
+        .problem-card h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .problem-card p {
+            font-size: 14px;
+            color: var(--color-text-light);
+        }
+
+        /* サービス特徴 */
+        .features {
+            background-color: var(--color-bg-primary);
+            border-top: 4px solid var(--color-border-gold);
+            border-bottom: 4px solid var(--color-border-gold);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 60px;
+            background-color: var(--color-bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            border: 2px solid var(--color-border-gold);
+            box-shadow: 0 8px 0 rgba(0,0,0,0.05);
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-item.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-text h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .feature-visual {
+            flex: 1;
+            height: 200px;
+            background-color: var(--color-bg-primary);
+            border-radius: 16px;
+            border: 2px dashed var(--color-border-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .mock-video {
+            width: 80%;
+            height: 60%;
+            background-color: #fff;
+            border: 2px solid var(--color-text-main);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .mock-face {
+            width: 40px;
+            height: 40px;
+            background-color: #FFB6C1;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--color-text-main);
+        }
+
+        .mock-mosaic {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 48px;
+            height: 48px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #E2D1E8;
+            border: 2px solid var(--color-text-main);
+            border-radius: 4px;
+        }
+
+        .mock-mosaic span {
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* フロー */
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .flow-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-step-num {
+            width: 40px;
+            height: 40px;
+            background-color: var(--color-accent-main);
+            color: var(--color-text-main);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 2px solid var(--color-text-main);
+            margin: 0 auto 16px;
+        }
+
+        .flow-step h4 {
+            margin-bottom: 8px;
+        }
+
+        /* CTAセクション */
+        .cta {
+            background-color: var(--color-text-main);
+            color: var(--color-bg-secondary);
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .cta h2 {
+            font-size: 32px;
+            margin-bottom: 24px;
+            color: var(--color-bg-secondary);
+        }
+
+        .cta p {
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+
+        /* フッター */
+        footer {
+            background-color: var(--color-bg-secondary);
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid #EAEAEA;
+        }
+
+        .footer-logo {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .footer-copy {
+            font-size: 12px;
+            color: var(--color-text-light);
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            .feature-item, .feature-item.reverse {
+                flex-direction: column;
+                padding: 24px;
+            }
+            .flow-grid {
+                grid-template-columns: 1fr;
+            }
+            .metrics-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            nav ul {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-inner">
+            <a href="#" class="logo">
+                <span class="logo-cube"></span>
+                CUBE EDIT
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#about">特徴</a></li>
+                    <li><a href="#features">サービス内容</a></li>
+                    <li><a href="#flow">ご利用の流れ</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <div class="hero-badge">BPO・業務委託対応</div>
+            <h1>対象を「キューブ」に変換。<br><span>ポップで安全な</span>モザイク編集。</h1>
+            <p>コンプライアンスを守りつつ、クリエイティブを損なわない。<br>面倒なマスキング処理は、CUBE EDITに丸投げしてください。</p>
+            <a href="#contact" class="btn">無料トライアルを相談する</a>
+        </div>
+    </section>
+
+    <section class="track-record">
+        <div class="container">
+            <p style="text-align: center; font-weight: bold; margin-bottom: 24px; color: var(--color-text-light);">各種プラットフォームの厳しい審査基準をクリア</p>
+            
+            <div class="metrics-container">
+                <div class="metric-item">
+                    <h4>500<span>名以上</span></h4>
+                    <p>導入クリエイター数</p>
+                </div>
+                <div class="metric-item">
+                    <h4>99.8<span>%</span></h4>
+                    <p>プラットフォーム審査通過率</p>
+                </div>
+                <div class="metric-item">
+                    <h4>10,000<span>本以上</span></h4>
+                    <p>累計処理動画数</p>
+                </div>
+            </div>
+
+            <div class="platform-logos">
+                <div class="logo-badge logo-fanza">FANZA</div>
+                <div class="logo-badge logo-fantia">Fantia</div>
+                <div class="logo-badge logo-myfans">myfans</div>
+                <div class="logo-badge logo-youtube">YouTube</div>
+            </div>
+            <p style="text-align: center; font-size: 12px; color: var(--color-text-light); margin-top: 16px;">※記載のプラットフォームで活動するクリエイター様からのご依頼実績です。</p>
+        </div>
+    </section>
+
+    <section id="about" class="section problems">
+        <div class="container">
+            <h2 class="section-title">こんな動画編集の課題、ありませんか？</h2>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>トラッキングの手間</h3>
+                    <p>動く被写体へのモザイク処理は、キーフレームを手作業で打つ必要があり、膨大な時間がかかってしまう。</p>
+                </div>
+                <div class="problem-card">
+                    <h3>コンプラ・プライバシー</h3>
+                    <p>意図しない映り込みや、プラットフォームのガイドライン違反により、販売停止やアカウント凍結が怖い。</p>
+                </div>
+                <div class="problem-card">
+                    <h3>見栄えの悪化</h3>
+                    <p>単なる黒塗りや粗いぼかしでは、動画本来のトーン＆マナーが崩れ、視聴者（ファン）に不快感を与えてしまう。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="section features">
+        <div class="container">
+            <h2 class="section-title">CUBE EDIT 3つの特徴</h2>
+            
+            <div class="feature-item">
+                <div class="feature-text">
+                    <h3>1. AI × 手動による高精度トラッキング</h3>
+                    <p>最新のAI技術で対象物を自動認識し、大枠のトラッキングを瞬時に完了。その後、専門のオペレーターが1フレーム単位で目視確認と微調整を行うため、激しい動きでもモザイク外れ・白抜き漏れを起こしません。</p>
+                </div>
+                <div class="feature-visual">
+                    <div class="mock-video">
+                        <div class="mock-face"></div>
+                        <div class="mock-mosaic">
+                            <span></span><span></span><span></span>
+                            <span></span><span></span><span></span>
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-item reverse">
+                <div class="feature-text">
+                    <h3>2. ブランドを損なわないポップな処理</h3>
+                    <p>ただ隠すだけでなく、動画のトーンに合わせた「キューブ処理」「イラストスタンプ追従」など、クリエイティブに馴染むマスキングデザインをご提案。ネガティブな処理を、ポジティブな演出に変換します。</p>
+                </div>
+                <div class="feature-visual">
+                    <div style="font-size: 48px; text-shadow: 2px 2px 0 var(--color-border-gold);">🍌 ✨ 📦</div>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-text">
+                    <h3>3. 圧倒的なスピードとコストパフォーマンス</h3>
+                    <p>モザイク処理に特化した専用ラインを構築しているため、一般的な動画編集プロダクションに依頼するよりも短納期・低コストでの納品が可能です。連載作品など、定期的な大量素材の一括処理にも対応しています。</p>
+                </div>
+                <div class="feature-visual">
+                    <div style="font-size: 48px; font-weight: bold; color: var(--color-accent-main); text-shadow: 2px 2px 0 var(--color-text-main);">ROI UP!</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="flow" class="section">
+        <div class="container">
+            <h2 class="section-title">ご利用の流れ</h2>
+            <div class="flow-grid">
+                <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <h4>素材の共有・ご要望</h4>
+                    <p style="font-size: 14px; color: var(--color-text-light);">クラウド経由で動画素材をお預かりし、隠したい対象と希望のテイスト、提出予定のプラットフォームをヒアリングします。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <h4>処理・編集</h4>
+                    <p style="font-size: 14px; color: var(--color-text-light);">当社にてAIトラッキングと手動補正による精密なモザイク編集を実施します。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <h4>確認・納品</h4>
+                    <p style="font-size: 14px; color: var(--color-text-light);">プレビューをご確認いただき、問題がなければプラットフォーム指定のフォーマットで納品いたします。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="cta">
+        <div class="container">
+            <h2>動画のモザイク処理、もう自社で抱え込まないでください。</h2>
+            <p>1分のショート動画から、長尺作品の数百本単位の一括処理まで。まずは品質をお試しください。</p>
+            <a href="#" class="btn" style="background-color: var(--color-bg-primary); border-color: var(--color-accent-main); box-shadow: 0 4px 0 var(--color-accent-main);">お問い合わせ・見積もり依頼</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-logo">CUBE EDIT</div>
+            <div class="footer-copy">&copy; 2026 Mosaic Cube Inc. All rights reserved.</div>
+        </div>
+    </footer>
+
+</body>
+</html>
